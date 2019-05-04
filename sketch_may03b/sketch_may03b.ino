@@ -10,7 +10,7 @@ void setup() {
   pinMode(servoPin[0], OUTPUT);
   pinMode(3, OUTPUT);
   analogWrite(3, 200);
-  Serial.begin(9600);
+  Serial.begin(500000);
   servo.attach(servoPin[1]);
   Serial.println("setup");
 }
