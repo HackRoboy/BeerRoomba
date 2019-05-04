@@ -1,24 +1,24 @@
 #include <Servo.h> 
 
-Servo myservo;
-int servoPin = 9;
-int feedbackPin = 8;
+Servo servo;
+int servoPin[2] = {10,11};
+int feedbackPin = 9;
 
 
 void setup() {
   pinMode(feedbackPin, INPUT);
-  pinMode(servoPin, OUTPUT);
+  pinMode(servoPin[0], OUTPUT);
   pinMode(3, OUTPUT);
   analogWrite(3, 200);
-  Serial.begin(115200);
-  //myservo.attach(servoPin);
+  Serial.begin(9600);
+  servo.attach(servoPin[1]);
   Serial.println("setup");
 }
 
 char msg[128];
 char buf[64];
 String val;
-int angle;
+int angle = 15;
 int diff;
 int direction;
 long dutyScale = 1000;
@@ -48,6 +48,9 @@ int readFeedback(int pin) {
   return theta;
 }
 
+int i=0;
+int rot_angle =0;
+
 void loop() { 
   int currentAngle = readFeedback(feedbackPin);
   diff = (currentAngle - angle + 180) % 360 - 180;
@@ -56,51 +59,102 @@ void loop() {
   if (Serial.available()) {
     Serial.println("read");
     byte count = Serial.readBytesUntil('\n', buf, 64);
-    buf[count] = '\0';
-    Serial.println("read done");
-    Serial.write(buf);
-    val = String(buf);
-    angle = val.toInt();
-    sprintf(msg, "val: %d\n", angle);
-    Serial.write(msg);
-    angle = angle % 360;
-
-    diff = (currentAngle - angle + 180) % 360 - 180;
-    diff = diff < -180 ? diff + 360 : diff;
-
-    if (abs(diff) < 2) {
-      direction = 0;
-    } else {
-      if (diff > 0) {
-        direction = 1;
-      } else if (diff < 0) {
-        direction = -1;
+    if(count>0){
+      Serial.println((int)buf[0]);
+      if(buf[0]==48)
+      {
+        Serial.write(&(buf[2]));
+        buf[count] = '\0';
+        val = String(&(buf[2]));
+        angle = val.toInt();
+        angle = angle % 360;
+        sprintf(msg, "rot0: %d\n", angle);
+        Serial.write(msg);
+      }
+      if(buf[0]==49)
+      {
+        Serial.write(&(buf[2]));
+        buf[count] = '\0';
+        val = String(&(buf[2]));
+        rot_angle = val.toInt();
+        sprintf(msg, "rot1: %d\n", rot_angle);
+        Serial.write(msg);
       }
     }
-    sprintf(msg, "diff: %d, currentAngle: %d\n", diff, currentAngle);
-    Serial.write(msg);
-
   }
 
+//  static bool dir = false;
+//  static bool dir2 = false;
+//  if(!dir)
+//    angle+=10;
+//  else 
+//    angle-=10;
+//  if(angle>345){
+//    dir = !dir;
+//    angle = 345;
+//  }
+//  if(angle<15){
+//    dir = !dir;
+//    angle = 15;
+//  }
+//  if(i%10==0){
+//    if(!dir2)
+//      rot_angle++;
+//    else
+//      rot_angle--;
+//    if(rot_angle>180){
+//      rot_angle = 180;
+//      dir2 = !dir2;
+//    }
+//    if(rot_angle<0){
+//      rot_angle = 0;
+//      dir2 = !dir2;
+//    }
+//    servo.write(rot_angle%180);
+//  }
+  
+
+  if (abs(diff) < 2) {
+    direction = 0;
+  } else {
+    if (diff > 0 && currentAngle<angle) {
+      direction = -1;
+    }else if(diff > 0 && currentAngle>angle){
+      direction = 1;
+    }else if (diff < 0  && currentAngle>angle) {
+      direction = 1;
+    }else if (diff < 0  && currentAngle<angle) {
+      direction = -1;
+    }
+  }
+  
+  i++;
+  if(i%1000==0){
+    sprintf(msg, "diff: %d, currentAngle: %d\n", diff, currentAngle);
+    Serial.write(msg);
+  }
   // direction
-  int speed = 10;
+  int speed = 20;
   if (abs(diff) < 5) {
     direction = 0;
   } else if (abs(diff) < 20) {
     speed = 0;
   } else {
-    speed = 5;
+    speed = 15;
   }
 
   if (direction == 1) {
-    analogWrite(servoPin, 181 - speed);
+    analogWrite(servoPin[0], 181 - speed);
     delay(20);
   } else if (direction == -1) {
-    analogWrite(servoPin, 195 + speed);
+    analogWrite(servoPin[0], 195 + speed);
     delay(20);
   } else {
-    analogWrite(servoPin, 190);
+    analogWrite(servoPin[0], 190);
   }
 
- 
+//  servo.write(0);      // Turn SG90 servo Left to 45 degrees
+//  delay(1000);          // Wait 1 second
+//  servo.write(180);      // Turn SG90 servo back to 90 degrees (center position)
+//  delay(1000);
 }
