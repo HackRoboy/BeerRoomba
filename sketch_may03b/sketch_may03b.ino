@@ -9,6 +9,8 @@ void setup() {
   pinMode(feedbackPin, INPUT);
   pinMode(servoPin[0], OUTPUT);
   pinMode(3, OUTPUT);
+  pinMode(2, OUTPUT);
+  digitalWrite(2,HIGH);
   analogWrite(3, 200);
   Serial.begin(500000);
   servo.attach(servoPin[1]);
@@ -80,6 +82,10 @@ void loop() {
         sprintf(msg, "rot1: %d\n", rot_angle);
         Serial.write(msg);
       }
+      if(buf[0]==50)
+        digitalWrite(2,HIGH);
+      if(buf[0]==51)
+        digitalWrite(2,LOW);
     }
   }
 
