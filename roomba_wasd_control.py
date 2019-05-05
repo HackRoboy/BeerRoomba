@@ -5,9 +5,15 @@ from std_msgs.msg import Int8
 
 ## Motor Stuff
 import time
-import pigpio
+# import pigpio
+import RPi.GPIO as GPIO
+import time
 
-pi = pigpio.pi()
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(22, GPIO.OUT, initial=False)
+GPIO.setup(24, GPIO.OUT, initial=False)
+GPIO.setup(26, GPIO.OUT, initial=False)
 
 # definition of H-Bridge IC pins
 pinDirection = 25 # physical 22
@@ -36,7 +42,6 @@ def stopMotor():
     pi.write(pinDirection, True)
     pi.write(pinPWM, False)
     pi.write(pinDisable, False)
-
 
 def talker():
     pub = rospy.Publisher('pet_roomba3000', Int8, queue_size=10)
@@ -73,6 +78,7 @@ def talker():
             print "stop"
             break
         rate.sleep()
+        GPIO.cleanup()
 
 if __name__ == '__main__':
     try:
