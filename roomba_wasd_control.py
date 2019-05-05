@@ -10,32 +10,32 @@ import pigpio
 pi = pigpio.pi()
 
 # definition of H-Bridge IC pins
-pinDirection = 22
-pinPWM = 24
-pinDisable = 26
+pinDirection = 25 # physical 22
+pinPWM = 8      # physical 24   
+pinDisable = 7  # physical 26 
 
 # initialization of GPIO pins
-pi.set_mode(pinsA[0], pigpio.OUTPUT)
-pi.set_mode(pinsA[1], pigpio.OUTPUT)
-pi.set_mode(pinsA[2], pigpio.OUTPUT)
+pi.set_mode(pinDirection, pigpio.OUTPUT)
+pi.set_mode(pinPWM, pigpio.OUTPUT)
+pi.set_mode(pinDisable, pigpio.OUTPUT)
 
 
 def driveMotorForwards():
-    pi.write(pinDirection, True)
-    pi.write(pinPWM, True)
-    pi.write(pinDisable, False)
-
-
-def driveMotorBackwards():
-    pi.write(pinDirection, False)
-    pi.write(pinPWM, True)
-    pi.write(pinDisable, False)
-
-
-def stopMotor():
     pi.write(pinDirection, False)
     pi.write(pinPWM, False)
     pi.write(pinDisable, True)
+
+
+def driveMotorBackwards():
+    pi.write(pinDirection, True)
+    pi.write(pinPWM, False)
+    pi.write(pinDisable, True)
+
+
+def stopMotor():
+    pi.write(pinDirection, True)
+    pi.write(pinPWM, False)
+    pi.write(pinDisable, False)
 
 
 def talker():
@@ -60,10 +60,13 @@ def talker():
                 print "s"
                 pub.publish(6)
             elif key == 'u':
+                print "u"
                 driveMotorForwards()
             elif key == 'j':
+                print "j"
                 driveMotorBackwards()
             elif key == 'n':
+                print "n"
                 stopMotor()
 
         elif key == 'p':
