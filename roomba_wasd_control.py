@@ -5,37 +5,37 @@ from std_msgs.msg import Int8
 
 ## Motor Stuff
 import time
-import pigpio
+# import pigpio
+import RPi.GPIO as GPIO
+import time
 
-pi = pigpio.pi()
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(22, GPIO.OUT, initial=False)
+GPIO.setup(24, GPIO.OUT, initial=False)
+GPIO.setup(26, GPIO.OUT, initial=False)
 
 # definition of H-Bridge IC pins
 pinDirection = 22
 pinPWM = 24
 pinDisable = 26
 
-# initialization of GPIO pins
-pi.set_mode(pinsA[0], pigpio.OUTPUT)
-pi.set_mode(pinsA[1], pigpio.OUTPUT)
-pi.set_mode(pinsA[2], pigpio.OUTPUT)
-
-
 def driveMotorForwards():
-    pi.write(pinDirection, True)
-    pi.write(pinPWM, True)
-    pi.write(pinDisable, False)
+    GPIO.output(pinDirection, True)
+    GPIO.output(pinPWM, True)
+    GPIO.output(pinDisable, False)
 
 
 def driveMotorBackwards():
-    pi.write(pinDirection, False)
-    pi.write(pinPWM, True)
-    pi.write(pinDisable, False)
+    GPIO.output(pinDirection, False)
+    GPIO.output(pinPWM, True)
+    GPIO.output(pinDisable, False)
 
 
 def stopMotor():
-    pi.write(pinDirection, False)
-    pi.write(pinPWM, False)
-    pi.write(pinDisable, True)
+    GPIO.output(pinDirection, False)
+    GPIO.output(pinPWM, False)
+    GPIO.output(pinDisable, True)
 
 
 def talker():
@@ -70,6 +70,7 @@ def talker():
             print "stop"
             break
         rate.sleep()
+        GPIO.cleanup()
 
 if __name__ == '__main__':
     try:
