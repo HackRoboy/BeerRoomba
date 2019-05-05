@@ -4,7 +4,6 @@ import rospy
 from std_msgs.msg import Int8
 
 ## Motor Stuff
-import time
 # import pigpio
 import RPi.GPIO as GPIO
 import time
@@ -12,7 +11,7 @@ import time
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(22, GPIO.OUT, initial=False)
-GPIO.setup(24, GPIO.OUT, initial=False)
+GPIO.setup(24, GPIO.OUT, initial=False)## Motor Stuff
 GPIO.setup(26, GPIO.OUT, initial=False)
 
 # definition of H-Bridge IC pins
@@ -67,12 +66,15 @@ def talker():
             elif key == 'u':
                 print "u"
                 driveMotorForwards()
+                pub.publish(8)
             elif key == 'j':
                 print "j"
                 driveMotorBackwards()
+                pub.publish(9)
             elif key == 'n':
                 print "n"
                 stopMotor()
+                pub.publish(10)
 
         elif key == 'p':
             print "stop"

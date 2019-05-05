@@ -1,6 +1,45 @@
 import serial
 import time
 
+
+## Motor Stuff
+# import pigpio
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(22, GPIO.OUT, initial=False)
+GPIO.setup(24, GPIO.OUT, initial=False)## Motor Stuff
+GPIO.setup(26, GPIO.OUT, initial=False)
+
+# definition of H-Bridge IC pins
+pinDirection = 25 # physical 22
+pinPWM = 8      # physical 24
+pinDisable = 7  # physical 26
+
+# initialization of GPIO pins
+pi.set_mode(pinDirection, pigpio.OUTPUT)
+pi.set_mode(pinPWM, pigpio.OUTPUT)
+pi.set_mode(pinDisable, pigpio.OUTPUT)
+
+
+def driveMotorForwards():
+    pi.write(pinDirection, False)
+    pi.write(pinPWM, False)
+    pi.write(pinDisable, True)
+
+
+def driveMotorBackwards():
+    pi.write(pinDirection, True)
+    pi.write(pinPWM, False)
+    pi.write(pinDisable, True)
+
+
+def stopMotor():
+    pi.write(pinDirection, True)
+    pi.write(pinPWM, False)
+    pi.write(pinDisable, False)
+
 def int2hex(number, bits):
     if number < 0:
         h = hex((1 << bits) + number)
@@ -109,6 +148,13 @@ def callback(data):
     elif data.data == 7:
         print('wake uo motherfucker')
         start()
+    elif data.data == 8:
+        driveMotorForwards()
+    elif data.data == 9:
+        driveMotorBackwards()
+    elif data.data == 10:
+        stopMotor()
+
     # MOVE
     move(forward, left, right)
 
